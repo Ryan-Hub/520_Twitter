@@ -3,7 +3,7 @@
 
 %% load data
 clear
-% load validation.mat
+%  load validation.mat
 load train.mat
 % load vocabulary.mat
 
