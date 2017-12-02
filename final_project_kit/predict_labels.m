@@ -10,7 +10,7 @@ function [Y_hat] = predict_labels(X_test_bag, test_raw)
     
     load('model_nb.mat', 'model_nb');
     [~ ,prob_estimates_nb, ~] = predict(model_nb, X_test_bag);
-%     Y_hat = probability_to_class(prob_estimates_nb);
+    % Y_hat = probability_to_class(prob_estimates_nb);
     
     %% length of tweets + multinomial logistic regression
     
