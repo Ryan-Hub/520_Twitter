@@ -17,6 +17,19 @@ load('model_nb.mat')
 predictions = probability_to_class(Posterior);
 measure = performance_measure(predictions, Y_train);
 
+
+%% liblinear training
+
+addpath('./liblinear');
+load('model_logreg.mat', 'model_logreg');
+
+% model_logreg = train(Y_train, X_train_bag, '-s 0');
+[predicted_label, accuracy, prob_estimates] = predict(Y_train, X_train_bag, model_logreg, '-b 1');
+
+prob_estimates(:,[2,5]) = prob_estimates(:,[5,2]);
+Y_hat = probability_to_class(prob_estimates);
+err = performance_measure(Y_train, Y_hat);
+
 %% 
 
 X_train_new = X_train_bag(Y_train<=2, :);
