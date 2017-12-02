@@ -14,8 +14,8 @@ sorted = sortrows(vocabsum,1,'descend'); % Sorts data by vocab words that occur 
 % disp(sorted(1:2177,2))
 
 % disp(X_train_bag(:,sorted(1:2177,2)))
-
-most_freq_x_trainbag = X_train_bag(:,sorted(1:2177,2));
+test = sorted(1:100,2);
+x_mostfreq = X_train_bag(:,sorted(1:2177,2));
 newsort = sorted(:,1); % Extracts just the number of occurances from the sorted data
 figure, plot(cumsum(newsort)/sum(newsort)); % plots the amount of words based off percentage of total appearance
 
