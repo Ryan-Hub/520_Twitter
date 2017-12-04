@@ -6,8 +6,19 @@ Y = Y_train;
 costs = [0 3 1 2 3; 4 0 2 3 2; 1 2 0 2 1; 2 1 2 0 2; 2 2 2 1 0];
 K = 10;
 err_vec = zeros(K,1);
+joy= X(Y==1, :);
+sadness = X(Y==2, :);
+surprise = X(Y==3, :);
+anger = X(Y==4, :);
+fear = X(Y==5, :);
+cv_index_all = crossvalind('KFold', size(X,1), K);
+cv_index_joy = crossvalind('KFold', size(joy,1), K);
+cv_index_sadness = crossvalind('KFold', size(sadness,1), K);
+cv_index_surprise = crossvalind('KFold', size(surprise,1), K);
+cv_index_anger = crossvalind('KFold', size(anger,1), K);
+cv_index_fear = crossvalind('KFold', size(fear,1), K);
 for N = 1:K 
-    [X_all, Y_all, X_test_all, Y_test_all,X_prop, Y_prop, X_test_prop, Y_test_prop] = CV(X, Y, K, N);
+    [X_all, Y_all, X_test_all, Y_test_all,X_prop, Y_prop, X_test_prop, Y_test_prop] = CV(X, Y, N, cv_index_all, cv_index_joy, cv_index_sadness, cv_index_fear, cv_index_surprise, cv_index_anger);
     alltreebag = TreeBagger(100,full(X_all), Y_all,'Cost', costs);
     save('alltreebag.mat', 'alltreebag');
 

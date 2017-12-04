@@ -1,15 +1,4 @@
-function [X_all, Y_all, X_test_all, Y_test_all,X_prop, Y_prop, X_test_prop, Y_test_prop] = CV(X, Y, K, N)
-    joy= X(Y==1, :);
-    sadness = X(Y==2, :);
-    surprise = X(Y==3, :);
-    anger = X(Y==4, :);
-    fear = X(Y==5, :);
-    cv_index_all = crossvalind('KFold', size(X,1), K);
-    cv_index_joy = crossvalind('KFold', size(joy,1), K);
-    cv_index_sadness = crossvalind('KFold', size(sadness,1), K);
-    cv_index_surprise = crossvalind('KFold', size(surprise,1), K);
-    cv_index_anger = crossvalind('KFold', size(anger,1), K);
-    cv_index_fear = crossvalind('KFold', size(fear,1), K);
+function [X_all, Y_all, X_test_all, Y_test_all,X_prop, Y_prop, X_test_prop, Y_test_prop] = CV(X, Y, N, cv_index_all, cv_index_joy, cv_index_sadness, cv_index_fear, cv_index_surprise, cv_index_anger)
 
     X_all = X(cv_index_all ~= N, :);
     Y_all = Y(cv_index_all ~= N, :);
