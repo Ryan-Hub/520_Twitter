@@ -10,7 +10,6 @@ function [Y_hat] = predict_labels(X_test_bag, test_raw)
     
     load('model_nb.mat', 'model_nb');
     [~ ,prob_estimates_nb, ~] = predict(model_nb, X_test_bag);
-    % Y_hat = probability_to_class(prob_estimates_nb);
     
     %% length of tweets + multinomial logistic regression
     
@@ -22,8 +21,8 @@ function [Y_hat] = predict_labels(X_test_bag, test_raw)
     % model_logreg = train(Y_train, X_train_bag, '-s 0');
     [~, ~, prob_estimates_logreg] = predict(zeros(size(X_test_bag, 1), 1), X_test_bag, model_logreg, '-b 1');
 
+    % somehow we have to switch positions because they were shuffled
     prob_estimates_logreg(:,[2,5]) = prob_estimates_logreg(:,[5,2]);
-    % Y_hat = probability_to_class(prob_estimates);
     
     
     %% ensamble

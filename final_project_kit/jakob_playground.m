@@ -20,10 +20,6 @@ predictions = probability_to_class(Posterior);
 measure = performance_measure(predictions, Y_train);
 
 
-%% classes to categorical
-a = [2;4;3;1;2;3];
-disp(toCategorical(a));
-
 %% first try to implement CV
 
 % permute training matrix
@@ -34,18 +30,31 @@ for i = 1:4
     X_new{i} = X_train_shuffled(1+(i-1)*4523:i*4523, :);
 end
 % train on 3, run on 4th. 
-for iter = 1:4
-    i = 1:4;
+%%
+k = 4;
+for iter = 1:k
+    disp(mod(iter:k-1+iter, k)+1)
     train = [X_new{i(1)}; X_new{i(2)}; X_new{i(3)}];
     test  = X_new{4};
+    
 end
 
 
-%% regression for ensemble in the end
+%% weights for ensemble in the end
 
-% what exactly do I want to fit?, how should that shit work?
-[r,m,b] = regression(t,y);
+% lets create a surface plot first
+w1 = (0:10)/10;
+w2 = (0:10)/10;
+errs = zeros(11, 11);
+for i=1:size(w1, 2)
+    for j=1:size(w2, 2)
+        disp([int2str(i),', ', int2str(j)]);
+        errs(i, j) = performance_measure(probability_to_class(prob_estimates_logreg * w1(i) + prob_estimates_nb * w2(j)), Y_train);
+    end
+end
 
+% surface plot baby
+surf(w1, w2, errs);
 
 %% liblinear training, train some more models ma boy
 
@@ -79,8 +88,6 @@ disp(a);
 
 %% length of tweet, 
 tweet_length = sum(X_train_bag,2);
-
-
 
 
 
