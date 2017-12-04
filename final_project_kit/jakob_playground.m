@@ -9,7 +9,9 @@ load train.mat
 
 % costs = [0 3 1 2 3; 4 0 2 3 2; 1 2 0 2 1; 2 1 2 0 2; 2 2 2 1 0];
 
+
 %%  NB we probably should use additive smoothing xval!
+
 % model_nb = fitcnb(X_train_bag, Y_train, 'distribution', 'mn');
 % save('model_nb.mat','model_nb')
 load('model_nb.mat')
@@ -18,7 +20,34 @@ predictions = probability_to_class(Posterior);
 measure = performance_measure(predictions, Y_train);
 
 
-%% liblinear training
+%% classes to categorical
+a = [2;4;3;1;2;3];
+disp(toCategorical(a));
+
+%% first try to implement CV
+
+% permute training matrix
+X_train_shuffled = X_train_bag(randperm(size(X_train_bag,1)),:);
+% split into 5 equal parts
+X_new = cell(1, 4);
+for i = 1:4
+    X_new{i} = X_train_shuffled(1+(i-1)*4523:i*4523, :);
+end
+% train on 3, run on 4th. 
+for iter = 1:4
+    i = 1:4;
+    train = [X_new{i(1)}; X_new{i(2)}; X_new{i(3)}];
+    test  = X_new{4};
+end
+
+
+%% regression for ensemble in the end
+
+% what exactly do I want to fit?, how should that shit work?
+[r,m,b] = regression(t,y);
+
+
+%% liblinear training, train some more models ma boy
 
 addpath('./liblinear');
 load('model_logreg.mat', 'model_logreg');
