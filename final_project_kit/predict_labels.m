@@ -19,16 +19,21 @@ function [Y_hat] = predict_labels(X_test_bag, test_raw)
     load('model_logreg.mat', 'model_logreg');
 
     % model_logreg = train(Y_train, X_train_bag, '-s 0');
-    [~, ~, prob_estimates_logreg] = predict(zeros(size(X_test_bag, 1), 1), X_test_bag, model_logreg, '-b 1');
+    [~, ~, prob_estimates_logreg] = predict(zeros(size(X_test_bag, 1), 1), double(logical(X_test_bag)), model_logreg, '-b 1');
 
     % somehow we have to switch positions because they were shuffled
     prob_estimates_logreg(:,[2,5]) = prob_estimates_logreg(:,[5,2]);
     
+    %% liblinear linear
+%     load('model_linear.mat', 'model_linear');
+%     [alpha, ~, ~] = predict(zeros(size(X_test_bag, 1), 1), X_test_bag, model_linear, '-b 1');
+%     prob_lin = toCategorical(alpha);
     
     %% ensamble
-    prob_estimates_total = prob_estimates_logreg + prob_estimates_nb;
+    prob_estimates_total = 1 * prob_estimates_logreg + 1 * prob_estimates_nb;
     
     %% probability to class
+    % phd guy: use that new output as an input for an svm to build ensamble
     costs = [0 3 1 2 3; 4 0 2 3 2; 1 2 0 2 1; 2 1 2 0 2; 2 2 2 1 0];
     [~, Y_hat] = min(prob_estimates_total*costs, [], 2);
      

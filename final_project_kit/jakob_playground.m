@@ -21,40 +21,54 @@ measure = performance_measure(predictions, Y_train);
 
 
 %% first try to implement CV
+load train.mat
 
-% permute training matrix
+% permute training matrix, permute Y matrix the same hopefully
 X_train_shuffled = X_train_bag(randperm(size(X_train_bag,1)),:);
 % split into 5 equal parts
 X_new = cell(1, 4);
+Y_new = cell(1, 4);
 for i = 1:4
-    X_new{i} = X_train_shuffled(1+(i-1)*4523:i*4523, :);
+    X_new{i} = X_train_bag(1+(i-1)*4523:i*4523, :);
+    Y_new{i} = Y_train(1+(i-1)*4523:i*4523);
 end
+
 % train on 3, run on 4th. 
-%%
 k = 4;
 for iter = 1:k
-    disp(mod(iter:k-1+iter, k)+1)
-    train = [X_new{i(1)}; X_new{i(2)}; X_new{i(3)}];
-    test  = X_new{4};
+    i = mod(iter:k-1+iter, k) + 1;
+    X_train = [X_new{i(1)}; X_new{i(2)}; X_new{i(3)}];
+    X_test  = X_new{4};
+    Y_train = [Y_new{i(1)}; Y_new{i(2)}; Y_new{i(3)}];
+    Y_test  = Y_new{4};
     
+    [prob_nb, prob_lr] = train_predict(X_train, Y_train, X_test);
+    
+    % what are good weights?, maybe different performance measure using mx5
+    % matrices
+    fun = @(x)performance_measure(probability_to_class(prob_nb*x(1) + prob_lr * x(2)), Y_test);
+    best_weights = fminsearchbnd(fun, [0.5, 0.5], [0, 0], [1, 1]);
+    'best weights'
+    disp(fminsearchbnd(fun, [1, 0], [0, 0], [1, 1]));
+    disp(fminsearchbnd(fun, [0, 1], [0, 0], [1, 1]));
+    disp(best_weights);
+    disp(performance_measure(probability_to_class(prob_nb*best_weights(1) + prob_lr * best_weights(2)), Y_test))
+    disp(performance_measure(probability_to_class(prob_nb), Y_test))
+
 end
 
 
-%% weights for ensemble in the end
-
-% lets create a surface plot first
-w1 = (0:10)/10;
-w2 = (0:10)/10;
-errs = zeros(11, 11);
-for i=1:size(w1, 2)
+    %%
+    w2 = (0:30)/10;
+    errs = zeros(size(w2));
+        
     for j=1:size(w2, 2)
-        disp([int2str(i),', ', int2str(j)]);
-        errs(i, j) = performance_measure(probability_to_class(prob_estimates_logreg * w1(i) + prob_estimates_nb * w2(j)), Y_train);
+        disp(j);
+        errs(j) = performance_measure(probability_to_class(prob_nb + prob_lr * w2(j)), Y_test);
     end
-end
+    plot(w2, errs);
+    hold on;
 
-% surface plot baby
-surf(w1, w2, errs);
 
 %% liblinear training, train some more models ma boy
 
